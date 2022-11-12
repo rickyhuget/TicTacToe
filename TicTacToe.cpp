@@ -4,26 +4,24 @@
 using namespace std;
 
 
-void declareVictory(string s) {
-  cout << "\nGame over. " << s << " wins!" << endl;
-}
+void declareVictory(string s) {cout << "\nGame over. " << s << " wins!" << endl;}
 
-void declareTie() {
-  cout << "\nGame over. It's a tie!. Nobody wins." << endl;
-}
+void declareTie() {cout << "\nGame over. It's a tie!" << endl;}
 
 void promptPlayer(string p) {
-  cout << p << "\'s turn. Pick a position (i.e. a1): ";
+  cout << p << "\'s turn. Pick a position.\nFirst number: row. Second number: column.\n(i.e. 00, 02, 10, 11, etc.): ";
 }
 
-bool isValidMark(string s) {
-  if ( (s == "a1") || (s == "a2") || (s == "a3") ||
-       (s == "b1") || (s == "b2") || (s == "b3") ||
-       (s == "c1") || (s == "c2") || (s == "c3") ) {
+bool isValidPlacement(string s) {
+  if ( (s.length() == 2)              &&
+       ('0' <= s[0]) && (s[0] <= '2') &&
+       ('0' <= s[1]) && (s[1] <= '2')    ) {
     return true;
   }
   return false;
 }
+
+int convertToInt(char c) {return (c - 48);}
 
 class Player {
   public:
@@ -38,67 +36,39 @@ class Player {
 
 class GameState {
   private:
-    char winner = ' ';
-    char pos_a1 = ' ';
-    char pos_b1 = ' ';
-    char pos_c1 = ' ';
-    char pos_a2 = ' ';
-    char pos_b2 = ' ';
-    char pos_c2 = ' ';
-    char pos_a3 = ' ';
-    char pos_b3 = ' ';
-    char pos_c3 = ' ';
-    vector<string> occupiedPositions;
 
-    void victoryDiagnostics() {
-      if ( (pos_a1 != ' ') && (pos_a1 == pos_a2) && (pos_a2 == pos_a3) ) {winner = pos_a1;} // 1
-      if ( (pos_b1 != ' ') && (pos_b1 == pos_b2) && (pos_b2 == pos_b3) ) {winner = pos_b1;} // 2
-      if ( (pos_c1 != ' ') && (pos_c1 == pos_c2) && (pos_c2 == pos_c3) ) {winner = pos_c1;} // 3
-      if ( (pos_a1 != ' ') && (pos_a1 == pos_b1) && (pos_b1 == pos_c1) ) {winner = pos_a1;} // 4
-      if ( (pos_a2 != ' ') && (pos_a2 == pos_b2) && (pos_b2 == pos_c2) ) {winner = pos_a2;} // 5
-      if ( (pos_a3 != ' ') && (pos_a3 == pos_b3) && (pos_b3 == pos_c3) ) {winner = pos_a3;} // 6
-      if ( (pos_a1 != ' ') && (pos_a1 == pos_b2) && (pos_b2 == pos_c3) ) {winner = pos_a1;} // 7
-      if ( (pos_a3 != ' ') && (pos_a3 == pos_b2) && (pos_b2 == pos_c1) ) {winner = pos_a1;} // 8
+    char winner = ' ';
+    char positions[3][3] = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
+
+    void victoryDiagnostics() {diagnostics(positions);}
+
+    void diagnostics(char (&p)[3][3]) {
+      if ( (p[0][0] != ' ')  && (p[0][0] == p[1][0]) && (p[1][0] == p[2][0]) ) {winner = p[0][0];} // 1 left vertical
+      if ( (p[0][1] != ' ')  && (p[0][1] == p[1][1]) && (p[1][1] == p[2][1]) ) {winner = p[1][0];} // 2 middle vertical
+      if ( (p[0][2] != ' ')  && (p[0][2] == p[1][2]) && (p[1][2] == p[2][2]) ) {winner = p[2][0];} // 3 right vertical
+      if ( (p[0][0] != ' ')  && (p[0][0] == p[0][1]) && (p[0][1] == p[0][2]) ) {winner = p[0][0];} // 4 top across
+      if ( (p[1][0] != ' ')  && (p[1][0] == p[1][1]) && (p[1][1] == p[1][2]) ) {winner = p[1][0];} // 5 middle across
+      if ( (p[2][0] != ' ')  && (p[2][0] == p[2][1]) && (p[2][1] == p[2][2]) ) {winner = p[2][0];} // 6 bottom across
+      if ( (p[0][0] != ' ')  && (p[0][0] == p[1][1]) && (p[1][1] == p[2][2]) ) {winner = p[0][0];} // 7 top-left to bottom right
+      if ( (p[2][0] != ' ')  && (p[2][0] == p[1][1]) && (p[1][1] == p[0][2]) ) {winner = p[2][0];} // 8 bottom-right to top left
     }
 
   public:
-    void markPosition_a1(char mark) {pos_a1 = mark;}
-    void markPosition_a2(char mark) {pos_a2 = mark;}
-    void markPosition_a3(char mark) {pos_a3 = mark;}
-    void markPosition_b1(char mark) {pos_b1 = mark;}
-    void markPosition_b2(char mark) {pos_b2 = mark;}
-    void markPosition_b3(char mark) {pos_b3 = mark;}
-    void markPosition_c1(char mark) {pos_c1 = mark;}
-    void markPosition_c2(char mark) {pos_c2 = mark;}
-    void markPosition_c3(char mark) {pos_c3 = mark;}
 
-    void markPosition(string position, char mark) {
-      if      (position == "a1") {markPosition_a1(mark);}
-      else if (position == "a2") {markPosition_a2(mark);}
-      else if (position == "a3") {markPosition_a3(mark);}
-      else if (position == "b1") {markPosition_b1(mark);}
-      else if (position == "b2") {markPosition_b2(mark);}
-      else if (position == "b3") {markPosition_b3(mark);}
-      else if (position == "c1") {markPosition_c1(mark);}
-      else if (position == "c2") {markPosition_c2(mark);}
-      else if (position == "c3") {markPosition_c3(mark);}
-      else {cout << "Not a valid position. Please choose again." << endl; return;}
-    }
+    void markPosition(int r, int c, char mark) {positions[r][c] = mark;}
 
-    void markPositionOccupied(string s) {
-      occupiedPositions.push_back(s);
-    }
-
-    bool isOccupied(string s) {
-      for (int i = 0; i < occupiedPositions.size(); i++) {
-        if (s == occupiedPositions[i]) {return true;}
-      }
+    bool vacant(int row, int column) {
+      if (positions[row][column] == ' ') {return true;}
       return false;
     }
 
-    bool tieState () {
-      if (occupiedPositions.size() >= 9) {return true;}
-      return false;
+    bool tieState() {
+      for (int i = 0; i <= 2; i++) {
+        for (int j = 0; j <= 2; j++) {
+          if (vacant(i, j)) {return false;}
+          }
+      }   
+      return true;
     }
 
     bool victoryState() {
@@ -121,62 +91,74 @@ class GameState {
     char getVictor() {return winner;}
 
     void display() {
-      cout << "\t    " << 'A'    << "     " << 'B'    << "     " << 'C'    << endl << endl;
-      cout << "\t1   " << pos_a1 << "  |  " << pos_b1 << "  |  " << pos_c1 << "   1" << endl << endl;
-      cout << "\t2   " << pos_a2 << "  |  " << pos_b2 << "  |  " << pos_c2 << "   2" << endl << endl;
-      cout << "\t3   " << pos_a3 << "  |  " << pos_b3 << "  |  " << pos_c3 << "   3" << endl << endl;
-      cout << "\t    " << 'A'    << "     " << 'B'    << "     " << 'C'             << endl << endl;
+      cout << endl;
+      cout << "     " << '0'             << "     " << '1'             << "     " << '2'                       << endl << endl;
+      cout << " 0   " << positions[0][0] << "  |  " << positions[0][1] << "  |  " << positions[0][2] << "   0" << endl << endl;
+      cout << " 1   " << positions[1][0] << "  |  " << positions[1][1] << "  |  " << positions[1][2] << "   1" << endl << endl;
+      cout << " 2   " << positions[2][0] << "  |  " << positions[2][1] << "  |  " << positions[2][2] << "   2" << endl << endl;
+      cout << "     " << '0'             << "     " << '1'             << "     " << '2'                       << endl << endl;
     }
-
-    
 };
+
+void promptMenu() {
+  char quit;
+  cout << "Press any key to quit." << endl;
+  cin >> quit;
+}
 
 void playerTurn(GameState &game, Player &player) {
   string position;
+  int row, column;
   game.display();
   promptPlayer(player.name);
   
   do {
     cin >> position;
-    if (!game.isOccupied(position)) {
-      game.markPosition(position, player.mark);
+    row = convertToInt(position[0]);
+    column = convertToInt(position[1]);
+
+    if (game.vacant(row, column)) {
+      game.markPosition(row, column, player.mark);
+      break;
+    }
+    else if (!isValidPlacement(position)) {
+      cout << "Not a valid position. Please choose again." << endl;
     }
     else {
       cout << "That position is already occupied. Please choose again." << endl;
     }
-  } while (!isValidMark(position) || game.isOccupied(position));
+    
+  } while (true);
+}
 
-  game.markPositionOccupied(position);
+void beginTurns(GameState& g, Player& pX, Player& pO) {
+  do {
+    playerTurn(g, pX);
+    if (g.endState()) {break;}
+    playerTurn(g, pO);
+    if (g.endState()) {break;}
+  } while (true);
+}
+
+void generatePlayers(vector<Player> &v) {
+  string input;
+  cout << "Enter player name for X's: ";
+  cin >> input;
+  v.push_back(Player(input, 'X'));
+  cout << "Enter player name for O's: ";
+  cin >> input;
+  v.push_back(Player(input, 'O'));
 }
 
 int main() {
   GameState game;
-  string input;
+  vector<Player> players;
 
-  cout << "Enter player name for X's: ";
-  cin >> input;
-  Player player_X(input, 'X');
-  cout << endl;
-  cout << "Enter player name for O's: ";
-  cin >> input;
-  Player player_O(input, 'O');
-  cout << endl;
-
-  do {
-    playerTurn(game, player_X);
-    if (game.endState()) {break;}
-    playerTurn(game, player_O);
-    if (game.endState()) {break;}
-  } while (true);
-
-  game.runEndState(player_X, player_O);
+  generatePlayers(players);
+  beginTurns(game, players[0], players[1]);
+  game.runEndState(players[0], players[1]);
   game.display();
-  
-  char quit;
-  cout << "Press 'q' to quit." << endl;
-  cin >> quit;
-
-  if (quit == 'q') {return 0;}
+  promptMenu();
   
   return 0;
 }
