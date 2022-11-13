@@ -5,12 +5,12 @@ using namespace std;
 
 class Game {
   private:
-    char winner;
+    char winner = ' ';
     char positions[3][3] = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
     string playerX_name;
     string playerO_name;
-    char playerX_mark;
-    char playerO_mark;
+    const char playerX_mark = 'X';
+    const char playerO_mark = 'O';
 
     void victoryDiagnostics();
     void diagnostics(char (&p)[3][3]);

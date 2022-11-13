@@ -6,12 +6,8 @@
 using namespace std;
 
 Game::Game(string p1, string p2) {
-  winner = ' ';
-  //positions[3][3] = {' ',' ',' ',' ',' ',' ',' ',' ',' '};
   playerX_name = p1;
   playerO_name = p2;
-  playerX_mark = 'X';
-  playerO_mark = 'O';
 }
   
 void Game::victoryDiagnostics() {diagnostics(positions);}
