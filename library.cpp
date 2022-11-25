@@ -42,12 +42,12 @@ void playerTurn(Game &game, Player &player) {
     row = convertToInt(position[0]);
     column = convertToInt(position[1]);
 
-    if (game.vacant(row, column)) {
+    if (!isValidPlacement(position)) {
+      cout << "Not a valid position. Please choose again." << endl;
+    }
+	else if (game.vacant(row, column)) {
       game.markPosition(row, column, player.mark);
       break;
-    }
-    else if (!isValidPlacement(position)) {
-      cout << "Not a valid position. Please choose again." << endl;
     }
     else {
       cout << "That position is already occupied. Please choose again." << endl;
